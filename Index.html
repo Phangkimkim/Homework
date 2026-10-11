@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework Planner & Schedule</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #161b22;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #30363d;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .header {
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      color: #58a6ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: #0d1117;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #21262d;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      background-color: #161b22;
+      color: #f0f6fc;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #58a6ff;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .add-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #238636;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .add-btn:active {
+      background-color: #2ea043;
+    }
+
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      background: none;
+      border: none;
+      color: #8b949e;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background-color: #21262d;
+      color: #58a6ff;
+    }
+
+    .hw-list {
+      list-style: none;
+    }
+
+    .hw-card {
+      background-color: #0d1117;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #21262d;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .hw-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .hw-title-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid #8b949e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hw-card.completed .checkbox {
+      background-color: #238636;
+      border-color: #238636;
+    }
+
+    .checkbox::after {
+      content: '✓';
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .hw-card.completed .checkbox::after {
+      display: block;
+    }
+
+    .hw-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0f6fc;
+      word-break: break-word;
+    }
+
+    .hw-card.completed .hw-title {
+      text-decoration: line-through;
+      color: #8b949e;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #f85149;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .hw-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding-top: 4px;
+    }
+
+    .subject-tag {
+      background-color: #1f6feb22;
+      color: #58a6ff;
+      border: 1px solid #1f6feb66;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    /* Alarm & Due Badges */
+    .alarm-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .alarm-urgent {
+      background-color: #da363322;
+      color: #f85149;
+      border: 1px solid #f8514966;
+      animation: pulse 1.5s infinite;
+    }
+
+    .alarm-warning {
+      background-color: #d2992222;
+      color: #e3b341;
+      border: 1px solid #d2992266;
+    }
+
+    .alarm-normal {
+      background-color: #23863622;
+      color: #3fb950;
+      border: 1px solid #23863666;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>📚 Homework Planner</h1>
+      <p>Schedule assignments and track deadlines</p>
+    </div>
+
+    <div class="form-group">
+      <input type="text" id="hwTitle" placeholder="Homework title or topic...">
+      <div class="row">
+        <select id="hwSubject">
+          <option value="General">General</option>
+          <option value="Math">Math</option>
+          <option value="Science">Science</option>
+          <option value="English">English</option>
+          <option value="History">History</option>
+          <option value="Coding">Coding</option>
+        </select>
+        <input type="date" id="hwDueDate">
+      </div>
+      <button class="add-btn" onclick="addHomework()">+ Schedule Homework</button>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+        <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
+        <button class="filter-btn" onclick="setFilter('completed', this)">Completed</button>
+      </div>
+    </div>
+
+    <ul class="hw-list" id="hwList"></ul>
+  </div>
+
+  <script>
+    let currentFilter = 'all';
+
+    // Set default date input to today
+    document.getElementById('hwDueDate').valueAsDate = new Date();
+
+    function addHomework() {
+      const titleInput = document.getElementById("hwTitle");
+      const subjectSelect = document.getElementById("hwSubject");
+      const dateInput = document.getElementById("hwDueDate");
+
+      const title = titleInput.value.trim();
+      const subject = subjectSelect.value;
+      const dueDate = dateInput.value;
+
+      if (!title || !dueDate) {
+        alert("Please enter a title and select a due date!");
+        return;
+      }
+
+      const ul = document.getElementById("hwList");
+      const li = document.createElement("li");
+      li.className = "hw-card";
+      li.dataset.dueDate = dueDate;
+
+      // Calculate alarm status
+      const alarmStatus = calculateAlarm(dueDate);
+
+      li.innerHTML = `
+        <div class="hw-top">
+          <div class="hw-title-area" onclick="toggleHomework(this)">
+            <div class="checkbox"></div>
+            <span class="hw-title">${title}</span>
+          </div>
+          <button class="delete-btn" onclick="deleteHomework(this)">✕</button>
+        </div>
+        <div class="hw-bottom">
+          <span class="subject-tag">${subject}</span>
+          <span class="alarm-badge ${alarmStatus.class}">${alarmStatus.text}</span>
+        </div>
+      `;
+
+      ul.appendChild(li);
+
+      // Reset title input
+      titleInput.value = "";
+      applyFilter();
+    }
+
+    function calculateAlarm(dueDateString) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const due = new Date(dueDateString);
+      due.setHours(0, 0, 0, 0);
+
+      const diffTime = due - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return { text: "🚨 Overdue", class: "alarm-urgent" };
+      } else if (diffDays === 0) {
+        return { text: "⏰ Due Today!", class: "alarm-urgent" };
+      } else if (diffDays === 1) {
+        return { text: "⚠️ Due Tomorrow", class: "alarm-warning" };
+      } else {
+        return { text: `📅 In ${diffDays} Days`, class: "alarm-normal" };
+      }
+    }
+
+    function toggleHomework(element) {
+      const card = element.closest('.hw-card');
+      card.classList.toggle("completed");
+      applyFilter();
+    }
+
+    function deleteHomework(button) {
+      const card = button.closest('.hw-card');
+      card.remove();
+    }
+
+    function setFilter(filter, button) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const cards = document.querySelectorAll('.hw-card');
+      cards.forEach(card => {
+        const isCompleted = card.classList.contains('completed');
+        if (currentFilter === 'all') {
+          card.style.display = 'flex';
+        } else if (currentFilter === 'pending') {
+          card.style.display = isCompleted ? 'none' : 'flex';
+        } else if (currentFilter === 'completed') {
+          card.style.display = isCompleted ? 'flex' : 'none';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
